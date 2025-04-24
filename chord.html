@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <header>Chord Game</header>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chord Identifier Quiz</title>
+  <style>
+    
+    .quiz-container {
+      max-width: 500px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .chord-image {
+      margin-bottom: 10px;
+      font-size: 24px;
+      font-weight: bold;
+    }
+    .subtext {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 20px;
+    }
+    .options button {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      background-color: #e0e0e0;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #d0d0d0;
+    }
+    .result {
+      font-size: 18px;
+      margin-top: 20px;
+    }
+    .score {
+      font-size: 20px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    .retry-btn {
+      display: none;
+      margin-top: 20px;
+    }
+    .retry-btn button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .retry-btn button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+    <br>
+      <nav class="nav">
+        <a href="scratch.html">About Us</a>
+        <a href="chord.html">Chord Game</a>
+        <a href="video.html">First Concert</a>
+        <a href="index.html">Resume</a> 
+    </nav>
+    <br>
+</head>
+<body>
+  <br>
+  <link href="css/scratch.css" rel="stylesheet" />
+  <div class="quiz-container">
+    <h1>Chord Identifier Quiz</h1>
+    <div class="chord-image" id="chordImage"></div>
+    <div class="subtext">(Note: The chord tones are shown in a shuffled order)</div>
+    <div class="options" id="options"></div>
+    <div class="result" id="result"></div>
+    <div class="score" id="score"></div>
+    <div class="retry-btn" id="retryBtn">
+      <button onclick="restartQuiz()">Try Again</button>
+    </div>
+  </div>
+
+  <script>
+    const fullChordList = [
+      { name: "C Major", notes: ["E", "C", "G"], options: ["C Major", "A Minor", "G Major", "D Minor"] },
+      { name: "A Minor", notes: ["C", "A", "E"], options: ["E Major", "A Minor", "D Major", "F Major"] },
+      { name: "G Major", notes: ["D", "B", "G"], options: ["G Major", "B Minor", "C Major", "A Major"] },
+      { name: "D Minor", notes: ["F", "D", "A"], options: ["D Minor", "E Minor", "F Major", "C Minor"] },
+      { name: "E Major", notes: ["G#", "E", "B"], options: ["E Major", "A Major", "G Minor", "C Major"] },
+      { name: "F Major", notes: ["F", "A", "C"], options: ["D Minor", "F Major", "E Major", "A Minor"] },
+      { name: "B Minor", notes: ["B", "D", "F#"], options: ["G Major", "B Minor", "E Minor", "D Major"] },
+      { name: "E Minor", notes: ["E", "G", "B"], options: ["E Minor", "C Major", "A Minor", "D Minor"] },
+      { name: "D Major", notes: ["D", "F#", "A"], options: ["D Major", "F Major", "C Major", "E Minor"] },
+      { name: "A Major", notes: ["A", "C#", "E"], options: ["A Major", "A Minor", "G Major", "F# Minor"] },
+      { name: "C Minor", notes: ["C", "Eb", "G"], options: ["C Minor", "C Major", "Ab Major", "E Minor"] },
+      { name: "F# Minor", notes: ["F#", "A", "C#"], options: ["F# Minor", "A Major", "D Minor", "G Major"] },
+      { name: "Ab Major", notes: ["Ab", "C", "Eb"], options: ["Ab Major", "C Minor", "F Minor", "G Major"] },
+      { name: "Bb Major", notes: ["Bb", "D", "F"], options: ["Bb Major", "D Minor", "C Major", "A Minor"] },
+      { name: "Eb Major", notes: ["Eb", "G", "Bb"], options: ["Eb Major", "G Major", "C Minor", "F Major"] }
+    ];
+
+    let currentRound = 0;
+    let score = 0;
+    let selectedChords = [];
+
+    const chordImageContainer = document.getElementById('chordImage');
+    const optionsContainer = document.getElementById('options');
+    const resultEl = document.getElementById('result');
+    const scoreEl = document.getElementById('score');
+    const retryBtn = document.getElementById('retryBtn');
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function startQuiz() {
+      selectedChords = shuffle([...fullChordList]).slice(0, 5);
+      currentRound = 0;
+      score = 0;
+      scoreEl.textContent = `Score: 0 / 5`;
+      retryBtn.style.display = 'none';
+      loadRound();
+    }
+
+    function loadRound() {
+      resultEl.textContent = '';
+      optionsContainer.innerHTML = '';
+      chordImageContainer.innerHTML = '';
+      const chord = selectedChords[currentRound];
+      const randomizedNotes = shuffle([...chord.notes]);
+      chordImageContainer.textContent = `Notes: ${randomizedNotes.join(" - ")}`;
+
+      const shuffledOptions = shuffle([...chord.options]);
+      shuffledOptions.forEach(option => {
+        const button = document.createElement('button');
+        button.textContent = option;
+        button.onclick = () => handleAnswer(option);
+        optionsContainer.appendChild(button);
+      });
+    }
+
+    function handleAnswer(selected) {
+      const chord = selectedChords[currentRound];
+      if (selected === chord.name) {
+        resultEl.textContent = 'Correct!';
+        score++;
+      } else {
+        resultEl.textContent = `Wrong! The correct answer was ${chord.name}.`;
+      }
+
+      scoreEl.textContent = `Score: ${score} / 5`;
+      currentRound++;
+
+      if (currentRound < 5) {
+        setTimeout(loadRound, 2000);
+      } else {
+        showScore();
+      }
+    }
+
+    function showScore() {
+      optionsContainer.innerHTML = '';
+      chordImageContainer.innerHTML = '';
+      resultEl.textContent = '';
+      scoreEl.textContent = `Final Score: ${score} / 5`;
+      retryBtn.style.display = 'block';
+    }
+
+    function restartQuiz() {
+      startQuiz();
+    }
+
+    startQuiz();
+  </script>
+  <br>
+  <H1>
+    <body>
+      Music Stats:
+      <br>
+      
+      <div class= 'tableauPlaceholder' id='viz1744918284347' style = 'align-self: center;' style='position: relative'><noscript><a href='#'><img alt='Overall Analysis ' src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;77&#47;77R25ZJJF&#47;1_rss.png' style="margin: auto;" style='border: 100px' /></a></noscript><object class='tableauViz'  style='display:none;'><param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' /> <param name='embed_code_version' value='3' /> <param name='path' value='shared&#47;77R25ZJJF' /> <param name='toolbar' value='yes' /><param name='static_image' value='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;77&#47;77R25ZJJF&#47;1.png' /> <param name='animate_transition' value='yes' /><param name='display_static_image' value='yes' /><param name='display_spinner' value='yes' /><param name='display_overlay' value='yes' /><param name='display_count' value='yes' /><param name='language' value='en-US' /></object></div>                <script type='text/javascript'>                    var divElement = document.getElementById('viz1744918284347');                    var vizElement = divElement.getElementsByTagName('object')[0];                    vizElement.style.minWidth='1250px';vizElement.style.maxWidth='100%';vizElement.style.minHeight='1277px';vizElement.style.maxHeight=(divElement.offsetWidth*0.75)+'px';                    var scriptElement = document.createElement('script');                    scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';                    vizElement.parentNode.insertBefore(scriptElement, vizElement);                </script>
+    </body>
+  </H1>
+</body>
+</html>

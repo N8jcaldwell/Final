@@ -1,0 +1,40 @@
+header{
+    padding: 10px;
+    font-size: xx-large;
+    color: darkblue;
+    background-color: rgba(255, 198, 76, 0.31);
+}
+
+body{
+    margin: 0px;
+    background-image: linear-gradient(rgba(250, 225, 175, 0.632)), url("../assets/img/NBG.jpg");
+    background-size: cover; 
+    background-attachment: fixed;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    text-align: center;
+   
+}
+nav {
+    padding: 15px; 
+    background-color: burlywood;
+    color: rgb(23, 8, 82);
+    font-size: x-large;
+    
+}
+
+.text-box{
+    background-color:  RGBA(222, 184, 135, .90);
+    color: rgb(23, 8, 82);
+    scale: 75%;
+    padding: 20px;
+}
+
+img{
+    width: 75%;
+    padding: 10px;
+    color: rgba(222, 184, 135,.8);
+}
+
+.smallimg{
+    width: 25%;
+}
